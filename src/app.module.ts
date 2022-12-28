@@ -1,13 +1,20 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ImagesModule } from './images/images.module';
+import { MongooseModule } from '@nestjs/mongoose';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, ImagesModule],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    UsersModule,
+    ImagesModule,
+    MongooseModule.forRoot(
+      'mongodb+srv://master:Derbent_5000@cluster0.0zoww.mongodb.net/?retryWrites=true&w=majority',
+      {
+        dbName: 'dioraKids',
+      },
+    ),
+    AuthModule,
+  ],
 })
 export class AppModule {}

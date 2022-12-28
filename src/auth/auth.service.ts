@@ -1,26 +1,34 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { UsersService } from '../users/users.service';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  constructor(private usersService: UsersService) {}
+
+  async validateUser(username: string, password: string): Promise<any> {
+    const user = await this.usersService.findOne({ email: username, password });
+    if (user && user.password === password) {
+      const { password, ...result } = user;
+      return result;
+    }
+    return null;
   }
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+  async register(user: CreateUserDto) {
+    const userData = await this.usersService.findOne(user);
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+    if (!userData) {
+      return await this.usersService.create(user);
+    }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
+    throw new BadRequestException('Такая почта уже есть');
   }
+  async login(user: CreateUserDto) {
+    const userData = await this.usersService.findOne(user);
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    if (userData) {
+      return userData;
+    }
   }
 }
