@@ -1,16 +1,25 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private jwtService: JwtService,
+  ) {}
 
-  async validateUser(username: string, password: string): Promise<any> {
-    const user = await this.usersService.findOne({ email: username, password });
+  async validateUser({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }): Promise<any> {
+    const user = await this.usersService.findOne({ email, password });
     if (user && user.password === password) {
-      const { password, ...result } = user;
-      return result;
+      return user;
     }
     return null;
   }
@@ -28,7 +37,13 @@ export class AuthService {
     const userData = await this.usersService.findOne(user);
 
     if (userData) {
-      return userData;
+      return {
+        user: userData,
+        access_token: this.jwtService.sign({
+          email: userData.email,
+          password: userData.password,
+        }),
+      };
     }
   }
 }

@@ -2,7 +2,6 @@ import { IsEmail, IsOptional, IsUrl, Length } from 'class-validator';
 
 export class CreateUserDto {
   @IsOptional()
-  // @IsNotEmpty()
   @Length(4, 32, { message: 'Имя минимум 4 символа' })
   fullName: string;
 
