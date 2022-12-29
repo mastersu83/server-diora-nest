@@ -14,6 +14,7 @@ import { AuthModule } from './auth/auth.module';
         dbName: 'dioraKids',
       },
     ),
+    // MongooseModule.forRoot('mongodb://localhost/authentication'),
     AuthModule,
   ],
 })

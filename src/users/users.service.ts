@@ -11,8 +11,8 @@ export class UsersService {
   findAll() {
     return this.userModel.find();
   }
-  async findOne({ email, password }: { email: string; password: string }) {
-    return this.userModel.findOne({ email, password });
+  async findOne({ email }: { email: string }) {
+    return this.userModel.findOne({ email });
   }
   async create(createUserDto: CreateUserDto) {
     const newUser = new this.userModel(createUserDto);
