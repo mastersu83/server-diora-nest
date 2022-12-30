@@ -11,15 +11,27 @@ export class UsersService {
   findAll() {
     return this.userModel.find();
   }
-  async findOne({ email }: { email: string }) {
-    return this.userModel.findOne({ email });
+  async findOneByEmail({ email }: { email: string }) {
+    const user = this.userModel.findOne({ email });
+
+    if (!user) {
+      return null;
+    }
+    return user;
+  }
+  async findOneById(_id) {
+    const user = this.userModel.findOne({ _id });
+
+    if (!user) {
+      return null;
+    }
+    return user;
   }
   async create(createUserDto: CreateUserDto) {
-    const newUser = new this.userModel(createUserDto);
-    return newUser.save();
+    return this.userModel.create(createUserDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  remove(_id: number) {
+    return `This action removes a #${_id} user`;
   }
 }

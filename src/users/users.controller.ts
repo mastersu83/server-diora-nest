@@ -11,7 +11,7 @@ export class UsersController {
 
   @Get()
   findOne(@Request() req) {
-    return this.usersService.findOne(req.user._doc);
+    return this.usersService.findOneByEmail(req.user._doc);
   }
 
   @Delete(':id')

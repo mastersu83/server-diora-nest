@@ -1,5 +1,7 @@
-import { Document } from 'mongoose';
+import { Document, HydratedDocument } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+
+export type ImageDocument = HydratedDocument<Image>;
 
 export interface IImage extends Document {
   readonly type: string;

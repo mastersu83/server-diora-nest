@@ -4,6 +4,8 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { utils } from '../utils/utils';
+import { UserDocument } from '../users/entities/user.entity';
+import * as process from 'process';
 
 @Injectable()
 export class AuthService {
@@ -19,23 +21,29 @@ export class AuthService {
     email: string;
     password: string;
   }): Promise<any> {
-    const user = await this.usersService.findOne({ email });
+    const user = await this.usersService.findOneByEmail({ email });
+
+    if (!user) {
+      return null;
+    }
     const passwordValid = await bcrypt.compare(password, user.password);
     if (user && passwordValid) {
       return user;
     }
-    return null;
   }
 
   generateJwtToken(payload) {
-    return this.jwtService.sign({
-      email: payload.email,
-      id: payload.id,
-    });
+    return this.jwtService.sign(
+      {
+        email: payload.email,
+        id: payload.id,
+      },
+      { secret: process.env.JWT_SECRET_KEY },
+    );
   }
 
   async register(user: CreateUserDto) {
-    const userData = await this.usersService.findOne(user);
+    const userData = await this.usersService.findOneByEmail(user);
 
     if (!userData) {
       const saltOrRounds = 10;
@@ -53,7 +61,7 @@ export class AuthService {
     throw new BadRequestException('Такая почта уже есть');
   }
   async login(user: CreateUserDto) {
-    const userData = await this.usersService.findOne(user);
+    const userData = await this.usersService.findOneByEmail(user);
 
     if (userData) {
       return {
@@ -62,9 +70,9 @@ export class AuthService {
       };
     }
   }
-  async getMe(user: CreateUserDto) {
-    const userData = await this.usersService.findOne(user);
-
+  async getMe(user: UserDocument) {
+    const userData = await this.usersService.findOneById(user._id);
+    console.log('authServer');
     if (userData) {
       return utils.sanitizeUser(userData);
     }
