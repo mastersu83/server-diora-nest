@@ -13,7 +13,7 @@ export class ImagesService {
     private fileService: FilesService,
   ) {}
 
-  async createFileName(file) {
+  async createFileName(file: any) {
     // console.log(image);
     const fileName = await this.fileService.createFile(file);
     return fileName;

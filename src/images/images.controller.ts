@@ -6,7 +6,7 @@ import {
   Param,
   Patch,
   Post,
-  UploadedFiles,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -14,25 +14,17 @@ import { ImagesService } from './images.service';
 import { CreateImageDto } from './dto/create-image.dto';
 import { UpdateImageDto } from './dto/update-image.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('images')
 export class ImagesController {
   constructor(private readonly imagesService: ImagesService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post('upload')
-  @UseInterceptors(
-    FileFieldsInterceptor([{ name: 'imageUrl' }, { name: 'type' }]),
-  )
-  createFileName(
-    @UploadedFiles()
-    files: {
-      imageUrl?: Express.Multer.File[];
-      type?: Express.Multer.File[];
-    },
-  ) {
-    console.log(files);
-    return this.imagesService.createFileName(files);
+  @UseInterceptors(FileInterceptor('imageUrl'))
+  createFileName(@UploadedFile() imageUrl) {
+    return this.imagesService.createFileName(imageUrl);
   }
   @UseGuards(JwtAuthGuard)
   @Post()
